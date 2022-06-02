@@ -1,9 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.Duration;
-import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.applicationautoscaling.EnableScalingProps;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
@@ -12,6 +9,8 @@ import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.logs.LogGroup;
 import software.constructs.Construct;
 
+import java.util.HashMap;
+
 public class Service01Stack extends Stack {
   public Service01Stack(final Construct scope, final String id, Cluster cluster) {
     this(scope, id, null, cluster);
@@ -19,6 +18,12 @@ public class Service01Stack extends Stack {
 
   public Service01Stack(final Construct scope, final String id, final StackProps props, final Cluster cluster) {
     super(scope, id, props);
+
+    final HashMap<String, String> env = new HashMap<>();
+    env.put("SPRING_DATASOURCE_URL", "jdbc:mariadb://" + Fn.importValue("rds-endpoint") +
+        ":3306/aws_project01?createDatabaseIfNotExist=true");
+    env.put("SPRING_DATASOURCE_USERNAME", "admin");
+    env.put("SPRING_DATASOURCE_PASSWORD", Fn.importValue("rds-password"));
 
     final ApplicationLoadBalancedFargateService service01 = ApplicationLoadBalancedFargateService.Builder.create(this, "ALB01")
         .serviceName("service01")
@@ -43,9 +48,9 @@ public class Service01Stack extends Stack {
         .build();
 
     service01.getTargetGroup().configureHealthCheck(new HealthCheck.Builder()
-            .path("/actuator/health")
-            .port("8080")
-            .healthyHttpCodes("200")
+        .path("/actuator/health")
+        .port("8080")
+        .healthyHttpCodes("200")
         .build());
 
     final ScalableTaskCount scalableTaskCount = service01.getService().autoScaleTaskCount(EnableScalingProps.builder()
@@ -54,9 +59,9 @@ public class Service01Stack extends Stack {
         .build());
 
     scalableTaskCount.scaleOnCpuUtilization("Service01AutoScaling", CpuUtilizationScalingProps.builder()
-            .targetUtilizationPercent(50) // Minha CPU ultrapassar 50% Cria outra instancia
-            .scaleInCooldown(Duration.seconds(60)) // Tempo limite para criar nova instancia
-            .scaleOutCooldown(Duration.seconds(60)) // Tempo limite para desligar instancia
+        .targetUtilizationPercent(50) // Minha CPU ultrapassar 50% Cria outra instancia
+        .scaleInCooldown(Duration.seconds(60)) // Tempo limite para criar nova instancia
+        .scaleOutCooldown(Duration.seconds(60)) // Tempo limite para desligar instancia
         .build());
   }
 }
