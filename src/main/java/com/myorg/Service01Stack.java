@@ -1,8 +1,10 @@
 package com.myorg;
 
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.applicationautoscaling.EnableScalingProps;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
@@ -44,6 +46,17 @@ public class Service01Stack extends Stack {
             .path("/actuator/health")
             .port("8080")
             .healthyHttpCodes("200")
+        .build());
+
+    final ScalableTaskCount scalableTaskCount = service01.getService().autoScaleTaskCount(EnableScalingProps.builder()
+        .minCapacity(2) // Minimo 2 instancias
+        .maxCapacity(4) // Maximo 4 instancias
+        .build());
+
+    scalableTaskCount.scaleOnCpuUtilization("Service01AutoScaling", CpuUtilizationScalingProps.builder()
+            .targetUtilizationPercent(50) // Minha CPU ultrapassar 50% Cria outra instancia
+            .scaleInCooldown(Duration.seconds(60)) // Tempo limite para criar nova instancia
+            .scaleOutCooldown(Duration.seconds(60)) // Tempo limite para desligar instancia
         .build());
   }
 }
