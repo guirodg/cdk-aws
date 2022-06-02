@@ -14,10 +14,10 @@ public class CdkApp {
 
     new SnsStack(app, "sns");
 
-    final Vpc vpc = new Vpc(app, "Vpc");
+    final VpcStack vpc = new VpcStack(app, "Vpc");
 
-    final ClusterStack cluster = new ClusterStack(app, "Cluster", vpc);
-    cluster.addDependency(Stack.of(vpc));
+    final ClusterStack cluster = new ClusterStack(app, "Cluster", vpc.getVpc());
+    cluster.addDependency(vpc);
 
     app.synth();
   }
