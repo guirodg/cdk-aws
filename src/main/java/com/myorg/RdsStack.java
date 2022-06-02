@@ -1,10 +1,14 @@
 package com.myorg;
 
 import software.amazon.awscdk.CfnParameter;
+import software.amazon.awscdk.SecretValue;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.*;
+import software.amazon.awscdk.services.rds.*;
 import software.constructs.Construct;
+
+import java.util.Collections;
 
 public class RdsStack extends Stack {
   public RdsStack(final Construct scope, final String id, Vpc vpc) {
@@ -21,5 +25,23 @@ public class RdsStack extends Stack {
 
     final ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, id, vpc.getVpcDefaultSecurityGroup());
     securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(3306));
+
+    DatabaseInstance.Builder.create(this, "Rds01")
+        .instanceIdentifier("aws-project01-db")
+        .engine(DatabaseInstanceEngine.mysql(MySqlInstanceEngineProps.builder()
+                .version(MysqlEngineVersion.VER_5_7)
+            .build()))
+        .vpc(vpc)
+        .credentials(Credentials.fromUsername("admin", CredentialsFromUsernameOptions.builder()
+                .password(SecretValue.cfnParameter(parameterPassword))
+            .build()))
+        .instanceType(InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO))
+        .multiAz(false)
+        .allocatedStorage(10)
+        .securityGroups(Collections.singletonList(securityGroup))
+        .vpcSubnets(SubnetSelection.builder()
+            .subnets(vpc.getPrivateSubnets())
+            .build())
+        .build();
   }
 }
