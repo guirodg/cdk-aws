@@ -19,6 +19,9 @@ public class CdkApp {
     final ClusterStack cluster = new ClusterStack(app, "Cluster", vpc.getVpc());
     cluster.addDependency(vpc);
 
+    final Service01Stack service01 = new Service01Stack(app, "Service01", cluster.getCluster());
+    service01.addDependency(cluster);
+
     app.synth();
   }
 }
