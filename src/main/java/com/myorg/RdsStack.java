@@ -18,6 +18,7 @@ public class RdsStack extends Stack {
     final CfnParameter parameterPassword = CfnParameter.Builder.create(this, "databasePassword")
         .type("String")
         .description("A senha do database RDS")
+        .noEcho(true) // Deve mascarar o valor?
         .build();
 
     final ISecurityGroup securityGroup = SecurityGroup.fromSecurityGroupId(this, id, vpc.getVpcDefaultSecurityGroup());
