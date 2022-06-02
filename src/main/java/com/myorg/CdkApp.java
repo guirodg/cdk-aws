@@ -2,7 +2,9 @@ package com.myorg;
 
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
+import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.ec2.Vpc;
 
 import java.util.Arrays;
 
@@ -11,6 +13,12 @@ public class CdkApp {
     App app = new App();
 
     new SnsStack(app, "sns");
+
+    final Vpc vpc = new Vpc(app, "Vpc");
+
+    final ClusterStack cluster = new ClusterStack(app, "Cluster", vpc);
+    cluster.addDependency(Stack.of(vpc));
+
     app.synth();
   }
 }
