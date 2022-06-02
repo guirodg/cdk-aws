@@ -16,3 +16,7 @@ It is a [Maven](https://maven.apache.org/) based project, so you can open this p
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## Para fazer deploy databse passando parametro
+`cdk deploy --parameters Rds:databasePassword=senha Rds Service01`  *Nome da env criada na stack rds CfnParameter databasePassword* 
+
