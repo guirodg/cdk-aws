@@ -10,6 +10,8 @@ import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFarga
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.logs.LogGroup;
+import software.amazon.awscdk.services.sqs.DeadLetterQueue;
+import software.amazon.awscdk.services.sqs.Queue;
 import software.constructs.Construct;
 
 import java.util.HashMap;
@@ -21,6 +23,20 @@ public class Service02Stack extends Stack {
 
   public Service02Stack(final Construct scope, final String id, final StackProps props, final Cluster cluster) {
     super(scope, id, props);
+
+    final Queue productEventsDlq = Queue.Builder.create(this, "ProductEventsDlq")
+        .queueName("product-events-dlq")
+        .build();
+
+    final DeadLetterQueue deadLetterQueue = DeadLetterQueue.builder()
+        .queue(productEventsDlq)
+        .maxReceiveCount(3)
+        .build();
+
+    final Queue productEvents = Queue.Builder.create(this, "ProductEvents")
+        .queueName("product-events")
+        .deadLetterQueue(deadLetterQueue)
+        .build();
 
     final HashMap<String, String> env = new HashMap<>();
     env.put("AWS_REGION", "us-east-1");
