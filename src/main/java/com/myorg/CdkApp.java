@@ -22,6 +22,8 @@ public class CdkApp {
     final RdsStack rds = new RdsStack(app, "Rds", vpc.getVpc());
     rds.addDependency(vpc);
 
+    final SnsStack snsStack = new SnsStack(app, "Sns");
+
     final Service01Stack service01 = new Service01Stack(app, "Service01", cluster.getCluster());
     service01.addDependency(cluster);
     service01.addDependency(rds);
