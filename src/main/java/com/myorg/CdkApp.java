@@ -29,6 +29,9 @@ public class CdkApp {
     service01.addDependency(rds);
     service01.addDependency(snsStack);
 
+    final Service01Stack service02 = new Service01Stack(app, "Service02", cluster.getCluster(), snsStack.getSnsTopic());
+    service02.addDependency(snsStack);
+
     app.synth();
   }
 }
