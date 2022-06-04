@@ -12,8 +12,6 @@ public class CdkApp {
   public static void main(final String[] args) {
     App app = new App();
 
-    new SnsStack(app, "sns");
-
     final VpcStack vpc = new VpcStack(app, "Vpc");
 
     final ClusterStack cluster = new ClusterStack(app, "Cluster", vpc.getVpc());
