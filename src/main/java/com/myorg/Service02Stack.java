@@ -86,5 +86,7 @@ public class Service02Stack extends Stack {
         .scaleInCooldown(Duration.seconds(60)) // Tempo limite para criar nova instancia
         .scaleOutCooldown(Duration.seconds(60)) // Tempo limite para desligar instancia
         .build());
+
+    productEventsQueue.grantConsumeMessages(service02.getTaskDefinition().getTaskRole());
   }
 }
