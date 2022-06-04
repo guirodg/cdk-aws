@@ -29,7 +29,7 @@ public class CdkApp {
 
     final DynamoDBStack dynamoDB = new DynamoDBStack(app, "DynamoDB");
 
-    final Service01Stack service02 = new Service01Stack(app, "Service02", cluster.getCluster(), snsStack.getSnsTopic());
+    final Service02Stack service02 = new Service02Stack(app, "Service02", cluster.getCluster(), snsStack.getSnsTopic(), dynamoDB.getProductEventsDB());
     service02.addDependency(cluster);
     service02.addDependency(snsStack);
     service02.addDependency(dynamoDB);
