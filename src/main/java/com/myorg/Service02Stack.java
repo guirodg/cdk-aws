@@ -53,12 +53,12 @@ public class Service02Stack extends Stack {
         .cluster(cluster)
         .cpu(512)
         .desiredCount(2)
-        .listenerPort(8080)
+        .listenerPort(9090)
         .memoryLimitMiB(1024)
         .taskImageOptions(ApplicationLoadBalancedTaskImageOptions.builder()
             .containerName("aws_project02")
-            .image(ContainerImage.fromRegistry("guirodg/aws-local-02:1.0.0"))
-            .containerPort(8080)
+            .image(ContainerImage.fromRegistry("guirodg/aws-local-02:1.4.0"))
+            .containerPort(9090)
             .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                 .logGroup(LogGroup.Builder.create(this, "Service02Group")
                     .logGroupName("Service02")
@@ -73,7 +73,7 @@ public class Service02Stack extends Stack {
 
     service02.getTargetGroup().configureHealthCheck(new HealthCheck.Builder()
         .path("/actuator/health")
-        .port("8080")
+        .port("9090")
         .healthyHttpCodes("200")
         .build());
 
