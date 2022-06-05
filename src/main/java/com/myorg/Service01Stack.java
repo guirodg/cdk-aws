@@ -37,7 +37,7 @@ public class Service01Stack extends Stack {
         .memoryLimitMiB(1024)
         .taskImageOptions(ApplicationLoadBalancedTaskImageOptions.builder()
             .containerName("aws_project01")
-            .image(ContainerImage.fromRegistry("guirodg/aws-local-01:1.1.0"))
+            .image(ContainerImage.fromRegistry("guirodg/aws-local-01:1.7.0"))
             .containerPort(8080)
             .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
                 .logGroup(LogGroup.Builder.create(this, "Service01Group")
